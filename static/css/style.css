@@ -592,10 +592,19 @@ body {
 }
 
 .action-icon-btn:hover {
+    transform: scale(1.05);
+}
+
+.action-icon-btn.tweet-btn:hover {
     background: var(--color-twitter);
     border-color: var(--color-twitter);
     color: white;
-    transform: scale(1.05);
+}
+
+.action-icon-btn.copy-btn:hover {
+    background: var(--accent-blue);
+    border-color: var(--accent-blue);
+    color: var(--bg-primary);
 }
 
 .update-description {

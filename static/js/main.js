@@ -15,6 +15,7 @@ let releaseNotesState = {
 // DOM Elements
 const refreshBtn = document.getElementById('refresh-btn');
 const refreshIcon = document.getElementById('refresh-icon');
+const exportCsvBtn = document.getElementById('export-csv-btn');
 const lastUpdatedSpan = document.getElementById('last-updated');
 const searchInput = document.getElementById('search-input');
 const clearSearchBtn = document.getElementById('clear-search');
@@ -43,6 +44,7 @@ const toastMessage = document.getElementById('toast-message');
 document.addEventListener('DOMContentLoaded', () => {
     // Setup Event Listeners
     refreshBtn.addEventListener('click', fetchReleaseNotes);
+    exportCsvBtn.addEventListener('click', exportToCSV);
     searchInput.addEventListener('input', handleSearch);
     clearSearchBtn.addEventListener('click', clearSearch);
     
@@ -387,6 +389,9 @@ function renderDetails() {
             <div class="card-header-row">
                 <span class="type-tag tag-${item.type}">${typeLabel}</span>
                 <div class="card-actions">
+                    <button class="action-icon-btn copy-btn" title="Copy to clipboard">
+                        <i class="fa-regular fa-copy"></i>
+                    </button>
                     <button class="action-icon-btn tweet-btn" title="Tweet this update" data-index="${index}">
                         <i class="fa-brands fa-x-twitter"></i>
                     </button>
@@ -396,6 +401,12 @@ function renderDetails() {
                 ${item.content}
             </div>
         `;
+        
+        // Add Event Listener to Copy Button
+        card.querySelector('.copy-btn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            copyToClipboard(item.plainText);
+        });
         
         // Add Event Listener to Tweet Button
         card.querySelector('.tweet-btn').addEventListener('click', (e) => {
@@ -520,6 +531,60 @@ function triggerTweetIntent() {
     window.open(tweetUrl, '_blank', 'width=550,height=420,toolbar=0,status=0');
     hideTweetModal();
     showToast('Redirecting to X (Twitter)...');
+}
+
+/* ==========================================================================
+   Clipboard and Export Utilities
+   ========================================================================== */
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        showToast('Copied to clipboard!');
+    }).catch(err => {
+        console.error('Could not copy text: ', err);
+        showToast('Failed to copy to clipboard', true);
+    });
+}
+
+function exportToCSV() {
+    if (releaseNotesState.parsedEntries.length === 0) {
+        showToast('No data available to export', true);
+        return;
+    }
+    
+    let csvRows = [];
+    // Header row
+    csvRows.push("Date,Category,Link,Update");
+    
+    releaseNotesState.parsedEntries.forEach(entry => {
+        const date = entry.title.replace(/"/g, '""');
+        const link = (entry.link || "").replace(/"/g, '""');
+        
+        entry.items.forEach(item => {
+            const category = item.type.toUpperCase();
+            let description = item.plainText;
+            description = description.replace(/"/g, '""'); // Escape double quotes
+            description = description.replace(/\r?\n|\r/g, ' '); // Remove newlines
+            
+            csvRows.push(`"${date}","${category}","${link}","${description}"`);
+        });
+    });
+    
+    const csvString = csvRows.join("\r\n");
+    const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    
+    const now = new Date();
+    const dateStr = now.toISOString().split('T')[0];
+    link.setAttribute("download", `bigquery_release_notes_${dateStr}.csv`);
+    
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    showToast('CSV export completed!');
 }
 
 /* ==========================================================================
