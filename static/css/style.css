@@ -51,6 +51,48 @@
 }
 
 /* ==========================================================================
+   Light Theme Variable Overrides
+   ========================================================================== */
+body.light-theme {
+    --bg-primary: #f1f5f9;         /* slate-100 */
+    --bg-secondary: #ffffff;       /* white */
+    --bg-card: rgba(255, 255, 255, 0.7);
+    --bg-card-hover: rgba(255, 255, 255, 0.95);
+    --border-color: rgba(15, 23, 42, 0.08);
+    --border-focus: rgba(14, 165, 233, 0.5);
+    
+    /* Brand Colors */
+    --accent-blue: #0ea5e9;        /* sky-500 */
+    --accent-purple: #8b5cf6;      /* purple-500 */
+    --accent-gradient: linear-gradient(135deg, #0ea5e9 0%, #8b5cf6 100%);
+    --accent-gradient-hover: linear-gradient(135deg, #0284c7 0%, #7c3aed 100%);
+    
+    /* Types Badges overrides for high contrast on light */
+    --bg-feature: rgba(13, 148, 136, 0.08);
+    --border-feature: rgba(13, 148, 136, 0.25);
+    
+    --bg-fix: rgba(5, 150, 105, 0.08);
+    --border-fix: rgba(5, 150, 105, 0.25);
+    
+    --bg-deprecated: rgba(220, 38, 38, 0.08);
+    --border-deprecated: rgba(220, 38, 38, 0.25);
+    
+    --bg-other: rgba(109, 40, 217, 0.08);
+    --border-other: rgba(109, 40, 217, 0.25);
+
+    /* Text Colors */
+    --text-primary: #0f172a;       /* slate-900 */
+    --text-secondary: #475569;     /* slate-600 */
+    --text-muted: #64748b;         /* slate-500 */
+    --text-link: #0284c7;          /* sky-600 */
+    
+    /* Shadows override */
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* ==========================================================================
    Basic Reset & Base Styles
    ========================================================================== */
 * {

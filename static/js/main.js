@@ -16,6 +16,8 @@ let releaseNotesState = {
 const refreshBtn = document.getElementById('refresh-btn');
 const refreshIcon = document.getElementById('refresh-icon');
 const exportCsvBtn = document.getElementById('export-csv-btn');
+const themeToggle = document.getElementById('theme-toggle');
+const themeIcon = document.getElementById('theme-icon');
 const lastUpdatedSpan = document.getElementById('last-updated');
 const searchInput = document.getElementById('search-input');
 const clearSearchBtn = document.getElementById('clear-search');
@@ -45,8 +47,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // Setup Event Listeners
     refreshBtn.addEventListener('click', fetchReleaseNotes);
     exportCsvBtn.addEventListener('click', exportToCSV);
+    themeToggle.addEventListener('click', toggleTheme);
     searchInput.addEventListener('input', handleSearch);
     clearSearchBtn.addEventListener('click', clearSearch);
+    
+    // Initialize Theme
+    initializeTheme();
     
     filterTags.forEach(tag => {
         tag.addEventListener('click', () => {
@@ -585,6 +591,33 @@ function exportToCSV() {
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
     showToast('CSV export completed!');
+}
+
+/* ==========================================================================
+   Theme Management (Light / Dark mode)
+   ========================================================================== */
+function initializeTheme() {
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    if (savedTheme === 'light') {
+        document.body.classList.add('light-theme');
+        themeIcon.className = 'fa-solid fa-moon';
+    } else {
+        document.body.classList.remove('light-theme');
+        themeIcon.className = 'fa-solid fa-sun';
+    }
+}
+
+function toggleTheme() {
+    const isLight = document.body.classList.toggle('light-theme');
+    if (isLight) {
+        themeIcon.className = 'fa-solid fa-moon';
+        localStorage.setItem('theme', 'light');
+        showToast('Swapped to Light theme');
+    } else {
+        themeIcon.className = 'fa-solid fa-sun';
+        localStorage.setItem('theme', 'dark');
+        showToast('Swapped to Dark theme');
+    }
 }
 
 /* ==========================================================================
