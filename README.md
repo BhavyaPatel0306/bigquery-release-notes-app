@@ -1,6 +1,6 @@
 # BigQuery Release Notes Explorer & Tweeter
 
-A sleek, responsive, single-page web application that fetches Google Cloud's BigQuery Release Notes feed, splits it into digestible, searchable updates, and provides a quick interface to tweet them directly on X (formerly Twitter).
+A single-page web application that fetches Google Cloud's BigQuery Release Notes feed, splits it into digestible, searchable updates, and provides a quick interface to prepare a draft for sharing on X.
 
 ---
 
@@ -14,8 +14,8 @@ A sleek, responsive, single-page web application that fetches Google Cloud's Big
   - 🔴 **Deprecated**: Deprecated or decommissioned functions.
   - 🟣 **Other**: Standard updates, general announcements, and enhancements.
 - **Search & Category Filtering**: Instantly search updates by keywords or filter by tag category.
-- **Draft Composer & X Web Intent Integration**: Automatically drafts a custom tweet for any update card, manages the 280-character limit (calculating URL shortener weight), and opens a secure X sharing window.
-- **Premium Sleek Dark Theme**: Built using clean, custom glassmorphism styling, responsive dual-pane layout, custom scrollbars, and modern typography (Outfit).
+- **Draft Composer & X Web Intent Integration**: Automatically drafts a custom tweet for any update card, manages the 280-character limit (calculating URL shortener weight), and opens a X sharing window.
+- **Responsive Interface**: Built using clean, custom glassmorphism styling, responsive dual-pane layout, custom scrollbars, and modern typography (Outfit).
 
 ---
 
@@ -40,7 +40,7 @@ bigquery-release-notes-app/
 │   └── index.html          # Core HTML interface template
 └── static/
     ├── css/
-    │   └── style.css       # Premium CSS styles and variables
+    │   └── style.css       # CSS styles and variables
     └── js/
         └── main.js         # Frontend controller, parsing, search, and tweet logic
 ```
@@ -56,6 +56,7 @@ bigquery-release-notes-app/
 
 1. **Clone or navigate to the project directory**:
    ```bash
+   git clone https://github.com/BhavyaPatel0306/bigquery-release-notes-app.git
    cd bigquery-release-notes-app
    ```
 
@@ -102,5 +103,15 @@ Click the **Refresh** button with the circular arrow icon in the header. The app
 - Click the **Twitter / X** icon on any update card.
 - A customized tweet draft will generate, e.g.:
   > `BigQuery Update (June 16, 2026): [Update Snippet]... Read more: https://docs.cloud.google.com/feeds/... #BigQuery #GoogleCloud`
-- The built-in composer modal lets you edit the text and monitors character usage (URLs are correctly weighted at 23 characters per X policies).
-- Click **Tweet on X** to open a secure Twitter share dialog.
+- The built-in composer modal lets you edit the text and monitors character usage (the current implementation counts URLs as 23 characters).
+- Click **Tweet on X** to open a X share dialog.
+
+## Design and limitations
+
+Flask fetches the upstream feed with a 15-second timeout and normalizes entries for the browser. JavaScript splits and categorizes the entries, filters the results, and prepares a sharing draft. Category labels are keyword-based heuristics, not an authoritative classification from Google Cloud.
+
+The app depends on an external feed and its formatting. A sharing dialog requires the user to review and submit the post; the app does not automatically publish updates. The bundled Flask server runs locally in debug mode and is intended for development.
+
+## Verification status
+
+No automated test suite or CI workflow is included yet. A manual review should cover feed loading, keyword and category filtering, empty results, upstream request failures, and draft length handling. These are suggested checks, not newly measured results.
