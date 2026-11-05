@@ -1,117 +1,60 @@
-# BigQuery Release Notes Explorer & Tweeter
+# BigQuery Release Notes Explorer
 
-A single-page web application that fetches Google Cloud's BigQuery Release Notes feed, splits it into digestible, searchable updates, and provides a quick interface to prepare a draft for sharing on X.
+**Python · Flask · JavaScript · HTML/CSS**
 
----
+A web app that turns Google Cloud's BigQuery release-notes feed into searchable, categorized update cards. A Flask backend proxies the official feed; the frontend splits each day's notes into individual updates, tags them, and lets you search, filter, export, and draft a post to share on X.
 
-## 🚀 Key Features
+## Features
 
-- **Live Feed Parsing**: Fetches the official Google Cloud BigQuery RSS/Atom XML feed live using a Flask proxy server.
-- **Micro-parsing on Client-Side**: Automatically dissects composite daily release lists into individual, atomic update items.
-- **Smart Update Classification**: Scans notes and tags them dynamically with category badges:
-  - 🟢 **Feature**: New features and support capabilities.
-  - 🔵 **Fix**: Bug resolutions and fixes.
-  - 🔴 **Deprecated**: Deprecated or decommissioned functions.
-  - 🟣 **Other**: Standard updates, general announcements, and enhancements.
-- **Search & Category Filtering**: Instantly search updates by keywords or filter by tag category.
-- **Draft Composer & X Web Intent Integration**: Automatically drafts a custom tweet for any update card, manages the 280-character limit (calculating URL shortener weight), and opens a X sharing window.
-- **Responsive Interface**: Built using clean, custom glassmorphism styling, responsive dual-pane layout, custom scrollbars, and modern typography (Outfit).
+- **Live feed:** Flask fetches the official BigQuery release-notes XML feed and normalizes it for the browser.
+- **Per-update cards:** each day's combined release entry is split into individual updates.
+- **Automatic tagging:** keyword rules label updates as *Feature*, *Fix*, *Deprecated*, or *Other*.
+- **Search and filter:** filter instantly by keyword or category.
+- **Share drafts:** generate an editable post for X with a live character count (URLs counted as 23 characters), then open X's share dialog to review and post.
+- **Copy and export:** copy an update to the clipboard or export every loaded update to CSV.
+- **Light and dark themes** with a toggle in the header.
 
----
+## Tech stack
 
-## 🛠️ Technology Stack
+| Layer | Tools |
+| --- | --- |
+| Backend | Python 3, Flask, Requests, feedparser |
+| Frontend | HTML, CSS (custom properties, Flexbox, Grid), vanilla JavaScript (DOMParser) |
+| Assets | Font Awesome, Google Fonts |
 
-- **Backend**: Python 3, Flask, Requests, Feedparser
-- **Frontend**: Plain HTML5, Vanilla CSS3 (Custom Variables, Flexbox, Grid), Vanilla JavaScript (ES6+, DOMParser, Web Intents)
-- **Icons**: Font Awesome 6 CDN
-- **Fonts**: Google Fonts (Outfit)
+## Run locally
 
----
+Requires Python 3.8 or later.
 
-## 📁 Project Structure
-
-```
-bigquery-release-notes-app/
-├── app.py                  # Main Flask backend application & API proxy
-├── requirements.txt        # Backend dependencies
-├── .gitignore              # Git ignore configuration
-├── README.md               # Project documentation
-├── templates/
-│   └── index.html          # Core HTML interface template
-└── static/
-    ├── css/
-    │   └── style.css       # CSS styles and variables
-    └── js/
-        └── main.js         # Frontend controller, parsing, search, and tweet logic
+```sh
+git clone https://github.com/BhavyaPatel0306/bigquery-release-notes-app.git
+cd bigquery-release-notes-app
+python -m venv .venv
+source .venv/bin/activate        # Windows: .venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+python app.py
 ```
 
----
+Open http://127.0.0.1:5000.
 
-## ⚙️ Getting Started & Installation
+## How it works
 
-### Prerequisites
-- Python 3.8 or higher installed on your machine.
+```text
+Browser ──GET /api/release-notes──▶ Flask (app.py) ──▶ Google Cloud BigQuery feed
+   │                                   │ 15 s timeout, normalized JSON
+   ▼                                   ▼
+main.js: split entries → tag → search/filter → share draft / copy / CSV export
+```
 
-### Setup Instructions
+| Path | Responsibility |
+| --- | --- |
+| `app.py` | Serves the page and the `/api/release-notes` feed proxy |
+| `templates/index.html` | Page layout |
+| `static/js/main.js` | Parsing, tagging, search, filters, share composer, export |
+| `static/css/style.css` | Styles and light/dark theme variables |
 
-1. **Clone or navigate to the project directory**:
-   ```bash
-   git clone https://github.com/BhavyaPatel0306/bigquery-release-notes-app.git
-   cd bigquery-release-notes-app
-   ```
+## Future work
 
-2. **Create a Python Virtual Environment**:
-   ```bash
-   python -m venv .venv
-   ```
-
-3. **Activate the Virtual Environment**:
-   - **On Windows (PowerShell)**:
-     ```powershell
-     .venv\Scripts\Activate.ps1
-     ```
-   - **On macOS/Linux (Bash/Zsh)**:
-     ```bash
-     source .venv/bin/activate
-     ```
-
-4. **Install Dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-5. **Run the Application**:
-   ```bash
-   python app.py
-   ```
-
-6. **Access the App**:
-   Open your browser and navigate to **[http://127.0.0.1:5000](http://127.0.0.1:5000)**.
-
----
-
-## 📝 Usage Guide
-
-### 1. Refreshing Data
-Click the **Refresh** button with the circular arrow icon in the header. The app will fetch the latest feed. The spinner animates during the fetch and stops once rendering is complete.
-
-### 2. Searching and Filtering
-- **Keyword Search**: Type terms (e.g. "JSON", "pricing", "materialized views") in the search input to instantly filter the active release dates and cards.
-- **Category Badges**: Click any category button (e.g. *Features*, *Fixes*) to view only updates matching that classification type.
-
-### 3. Tweeting Updates
-- Click the **Twitter / X** icon on any update card.
-- A customized tweet draft will generate, e.g.:
-  > `BigQuery Update (June 16, 2026): [Update Snippet]... Read more: https://docs.cloud.google.com/feeds/... #BigQuery #GoogleCloud`
-- The built-in composer modal lets you edit the text and monitors character usage (the current implementation counts URLs as 23 characters).
-- Click **Tweet on X** to open a X share dialog.
-
-## Design and limitations
-
-Flask fetches the upstream feed with a 15-second timeout and normalizes entries for the browser. JavaScript splits and categorizes the entries, filters the results, and prepares a sharing draft. Category labels are keyword-based heuristics, not an authoritative classification from Google Cloud.
-
-The app depends on an external feed and its formatting. A sharing dialog requires the user to review and submit the post; the app does not automatically publish updates. The bundled Flask server runs locally in debug mode and is intended for development.
-
-## Verification status
-
-No automated test suite or CI workflow is included yet. A manual review should cover feed loading, keyword and category filtering, empty results, upstream request failures, and draft length handling. These are suggested checks, not newly measured results.
+- Add unit tests for the parsing and tagging logic, plus a CI workflow.
+- Replace keyword tagging with a more robust classifier.
+- Add a production server configuration (the bundled server runs in Flask debug mode for local development).
